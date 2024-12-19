@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:ifrantrackln/pages/coordinateur/Timetable.dart';
 import 'package:ifrantrackln/pages/coordinateur/session.dart';
+import 'package:ifrantrackln/pages/coordinateur/user.dart';
 import 'dart:convert';
 import 'package:ifrantrackln/pages/login/login.dart';
 
@@ -147,6 +148,10 @@ Future<void> deconnexion(BuildContext context) async {
               leading: Icon(Icons.person_3_sharp),
               title: Text('User'),
               onTap: () {
+                     setState(() {
+                  _currentPage = User(token: widget.token);
+                });
+
                  _scaffoldKey.currentState?.closeDrawer();
               },
             ),
