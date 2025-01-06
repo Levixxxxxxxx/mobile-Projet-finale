@@ -18,7 +18,7 @@ class _MyWidgetState extends State<MainscreenParent> {
 Map<String, dynamic>? childrenData;
   bool isLoading = true;
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  Widget _currentPage = Homeparent();
+  Widget _currentPage = Home();
 
 
 @override
@@ -81,7 +81,7 @@ Future<Map<String, dynamic>?> recupererDonneesUtilisateur() async {
  
 
     } else {
-      // Si la requête échoue, retourner null
+   
       print('Erreur de récupération des données utilisateur: ${response.statusCode}');
       return null;
     }
@@ -109,7 +109,7 @@ Future<Map<String, dynamic>?> parentEtudiant() async {
  
 
     } else {
-      // Si la requête échoue, retourner null
+     
       print('Erreur de récupération des données utilisateur: ${response.statusCode}');
       return null;
     }
@@ -153,18 +153,7 @@ Future<Map<String, dynamic>?> parentEtudiant() async {
                   
                 ],
               )
-            ),
-                ListTile(
-                     leading: Icon(Icons.home),
-                   title: Text('Home'),
-                  onTap: () {
-                    setState(() {
-                      _currentPage = Homeparent();
-                    });
-                    _scaffoldKey.currentState?.closeDrawer();
-                  },
-                ),
-            
+            ),          
             ExpansionTile(
               leading: Icon(Icons.people),
               title: Text('Children'),
@@ -186,7 +175,7 @@ Future<Map<String, dynamic>?> parentEtudiant() async {
                     onTap: () {
   setState(() {
     _currentPage = DetailsEtudiant(
-      key: UniqueKey(), // Forcer le rafraîchissement
+      key: UniqueKey(), 
       userId: children["id"],
       token: widget.token,
       classe: childrenc["id"],

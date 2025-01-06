@@ -26,10 +26,10 @@ final _formKey = GlobalKey<FormState>();
     if (_formKey.currentState?.validate() != true) {
       return;
     }
-    // URL de l'API
+   
     var url = Uri.parse('http://10.0.2.2:8000/api/trackin/login');
 
-    // Données à envoyer dans le corps de la requête
+  
     var body = jsonEncode({
       'email': _emailController.text,
       'password': _passwordController.text,
@@ -52,7 +52,7 @@ final _formKey = GlobalKey<FormState>();
       if (response.statusCode == 200) {
         var jsonResponse = jsonDecode(response.body); 
          var token = jsonResponse["data"]["token"];
-        // var token = jsonResponse["data"]["token"]; 
+   
           ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('connection reussi.')),    
       ); 
@@ -74,7 +74,7 @@ final _formKey = GlobalKey<FormState>();
          
       } else {
         print('Erreur de connexion : ${response.statusCode}');
-        // Afficher un message d'erreur à l'utilisateur
+     
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Erreur de connexion.')),
         );

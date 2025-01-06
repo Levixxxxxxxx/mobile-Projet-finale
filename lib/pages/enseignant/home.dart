@@ -19,7 +19,7 @@ class _HomeEnseignantState extends State<HomeEnseignant> {
   List<dynamic> seanceComming = [];
   List<dynamic> seancePassed = [];
   bool isLoading = true;
-  bool showCurrentSession = true; // To toggle between current and past sessions
+  bool showCurrentSession = true; 
 
   @override
   void initState() {

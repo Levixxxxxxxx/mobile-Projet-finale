@@ -16,14 +16,15 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
   bool isLoading = true;
   Map<String, dynamic>? selectedClasse;
   int? classeid;
-  String? selectedTimetableType; // "current", "past", or "upcoming"
+  String? selectedTimetableType; 
   String? selectedDay;
   Map<String, dynamic>? timetableData;
   Map<String, dynamic>? pastTimetableData;
   Map<String, dynamic>? upcomingData;
   int? timetableid;
-  String? selectedweek ; 
+  String? selectedweek;
   Map<String, dynamic>? selectedTimetableData;
+
   @override
   void initState() {
     super.initState();
@@ -33,6 +34,25 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
   Future<void> fetchData() async {
     await recupererDonneesUtilisateur();
     await classe();
+  }
+
+  Future<void> createTimetable(Map<String, dynamic> timetableData) async {
+    final response = await http.post(
+      Uri.parse('http://10.0.2.2:8000/api/trackin/timetable'),
+      headers: {
+        'Authorization': 'Bearer ${widget.token}',
+        'Content-Type': 'application/json',
+      },
+      body: jsonEncode(timetableData),
+    );
+
+    if (response.statusCode == 201) {
+      print("Emploi du temps créé avec succès");
+      upcomingemploietemps(); // Rafraîchissez les données
+    } else {
+      print(
+          "Erreur lors de la création de l'emploi du temps: ${response.body}");
+    }
   }
 
   Future<Map<String, dynamic>?> recupererDonneesUtilisateur() async {
@@ -117,10 +137,9 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
     }
   }
 
- Future<void> selectedemploietemps() async {
+  Future<void> selectedemploietemps() async {
     final response = await http.get(
-      Uri.parse(
-          'http://10.0.2.2:8000/api/trackin/timetable/${timetableid}'),
+      Uri.parse('http://10.0.2.2:8000/api/trackin/timetable/${timetableid}'),
       headers: {
         'Authorization': 'Bearer ${widget.token}',
       },
@@ -137,8 +156,6 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
           'Erreur de récupération des données emploi du temps: ${response.statusCode}');
     }
   }
-
-
 
   Future<void> upcomingemploietemps() async {
     final response = await http.get(
@@ -195,7 +212,7 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
           ? Center(child: CircularProgressIndicator())
           : Stack(
               children: [
-                // Page principale (Liste des classes)
+              
                 if (selectedClasse == null && selectedTimetableType == null)
                   SingleChildScrollView(
                     child: Column(
@@ -503,7 +520,8 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
                                             style: TextStyle(fontSize: 16),
                                           )
                                   ]);
-                                } else if (selectedTimetableType == "past" && selectedweek == null ) {
+                                } else if (selectedTimetableType == "past" &&
+                                    selectedweek == null) {
                                   return pastTimetableData != null
                                       ? ListView.builder(
                                           shrinkWrap: true,
@@ -517,10 +535,10 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
                                                     [index];
                                             return GestureDetector(
                                               onTap: () {
-                                                  timetableid = Npast["id"];
-                                                      print(Npast["id"]); 
-                                                  selectedemploietemps();
-                                                  selectedweek = '1' ;
+                                                timetableid = Npast["id"];
+                                                print(Npast["id"]);
+                                                selectedemploietemps();
+                                                selectedweek = '1';
                                               },
                                               child: Card(
                                                 child: ListTile(
@@ -539,7 +557,8 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
                                         )
                                       : Text('Aucun PastTimetable ');
                                 } else if (selectedTimetableType ==
-                                    "upcoming" && selectedweek == null ) {
+                                        "upcoming" &&
+                                    selectedweek == null) {
                                   return pastTimetableData != null
                                       ? ListView.builder(
                                           shrinkWrap: true,
@@ -550,28 +569,39 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
                                           itemBuilder: (context, index) {
                                             final Nupcoming =
                                                 upcomingData?["data"][index];
-                                            return GestureDetector(
-                                              onTap: (){
-                                                setState(() {
-                                                      timetableid = Nupcoming["id"];
-                                                      print(Nupcoming["id"]); 
-                                                  selectedemploietemps();
-                                                  selectedweek = '1' ;
-                                                });
-                                              },
-                                              child: Card(
-                                                child: ListTile(
-                                                  title: Text('Timetable'),
-                                                  subtitle: Text(
-                                                    '${Nupcoming["date_debut"]} - ${Nupcoming["date_fin"]} ',
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black),
+                                            return Column(children: [
+                                              FloatingActionButton(
+                                                onPressed:
+                                                    showCreateTimetableDialog,
+                                                child: Icon(Icons.add),
+                                                tooltip:
+                                                    'Créer un nouvel emploi du temps',
+                                              ),
+                                              SizedBox(height: 10),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setState(() {
+                                                    timetableid =
+                                                        Nupcoming["id"];
+                                                    print(Nupcoming["id"]);
+                                                    selectedemploietemps();
+                                                    selectedweek = '1';
+                                                  });
+                                                },
+                                                child: Card(
+                                                  child: ListTile(
+                                                    title: Text('Timetable'),
+                                                    subtitle: Text(
+                                                      '${Nupcoming["date_debut"]} - ${Nupcoming["date_fin"]} ',
+                                                      style: TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                          color: Colors.black),
+                                                    ),
                                                   ),
                                                 ),
                                               ),
-                                            );
+                                            ]);
                                           },
                                         )
                                       : Text('Aucun UpcomingTimetable ');
@@ -589,10 +619,10 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
                       ],
                     ),
                   ),
-                     // Contenu spécifique au upcomin et past emploi du temps
-                   if(selectedweek != null)             
-                   Container(
-                     decoration: BoxDecoration(
+                
+                if (selectedweek != null)
+                  Container(
+                    decoration: BoxDecoration(
                       boxShadow: [
                         BoxShadow(
                           color: const Color.fromARGB(255, 0, 0, 0)
@@ -608,7 +638,7 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
                     width: double.infinity,
                     padding: const EdgeInsets.all(20),
                     child: Column(
-                       crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         IconButton(
                           icon: Icon(Icons.arrow_back, color: Colors.black),
@@ -620,125 +650,119 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
                         ),
                         Column(
                           children: [
-                            Text('Timetable', style: TextStyle(
-                              fontWeight: FontWeight.w700 ,
-                              fontSize: 25 ,
-                            )),
-                            Text('(${selectedTimetableData?["data"]["date_debut"]} - ${selectedTimetableData?["data"]["date_fin"]})' , style: TextStyle(
-                              fontSize: 14 ,
-                              fontWeight: FontWeight.w400 ,
-                              color: Colors.grey ,
-                            ),),
-                            SizedBox(height: 10,),
-                            Row(
-                                mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        for (String day in [
-                                          'Monday',
-                                          'Tuesday',
-                                          'Wednesday',
-                                          'Thursday',
-                                          'Friday'
-                                        ])
-                                          GestureDetector(
-                                            onTap: () {
-                                              setState(() {
-                                                selectedDay = day;
-                                              });
-                                            },
-                                            child: Card(
-                                              color: selectedDay == day
-                                                  ? const Color(0xFF202149)
-                                                  : const Color.fromARGB(
-                                                      255, 224, 238, 253),
-                                              elevation: 4,
-                                              shape: RoundedRectangleBorder(
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                              ),
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                child: Text(
-                                                  day,
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    fontWeight: FontWeight.bold,
-                                                    color: selectedDay == day
-                                                        ? Colors.white
-                                                        : Colors.black,
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                      ],
+                            Text('Timetable',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w700,
+                                  fontSize: 25,
+                                )),
+                            Text(
+                              '(${selectedTimetableData?["data"]["date_debut"]} - ${selectedTimetableData?["data"]["date_fin"]})',
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: Colors.grey,
+                              ),
                             ),
-                              const SizedBox(height: 20),
-                               selectedDay != null
-                                        ? ListView.builder(
-                                            shrinkWrap: true,
-                                            physics:
-                                                const NeverScrollableScrollPhysics(),
-                                            itemCount: selectedTimetableData?["data"]
-                                                        ["seances"]
-                                                    ?.where((seance) {
-                                                  final date = DateTime.parse(
-                                                      seance["date"]);
-                                                  return _dayToString(
-                                                              date.weekday)
-                                                          .toLowerCase() ==
-                                                      selectedDay!
-                                                          .toLowerCase();
-                                                }).length ??
-                                                0,
-                                            itemBuilder: (context, index) {
-                                              final filteredSeances =
-                                                  selectedTimetableData?["data"]
-                                                          ["seances"]
-                                                      ?.where((seance) {
-                                                final date = DateTime.parse(
-                                                    seance["date"]);
-                                                return _dayToString(
-                                                            date.weekday)
-                                                        .toLowerCase() ==
-                                                    selectedDay!.toLowerCase();
-                                              }).toList();
-                                              final seance =
-                                                  filteredSeances?[index];
-                                              return Card(
-                                                child: ListTile(
-                                                  title: Text(
-                                                    seance?["module"]
-                                                            ["label"] ??
-                                                        "Unknown Module",
-                                                    style: const TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        color: Colors.black),
-                                                  ),
-                                                  subtitle: Text(
-                                                    'Type: ${seance?["type_seance"]["label"] ?? ""} | ${seance?["heure_debut"] ?? ""} - ${seance?["heure_fin"] ?? ""} | Salle: ${seance?["salle"]["label"] ?? ""}',
-                                                    style: const TextStyle(
-                                                        color: Colors.blueGrey),
-                                                  ),
-                                                ),
-                                              );
-                                            },
-                                          )
-                                        : const Text(
-                                            'Sélectionnez un jour pour voir les séances.',
-                                            style: TextStyle(fontSize: 16),
-                                          )
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                for (String day in [
+                                  'Monday',
+                                  'Tuesday',
+                                  'Wednesday',
+                                  'Thursday',
+                                  'Friday'
+                                ])
+                                  GestureDetector(
+                                    onTap: () {
+                                      setState(() {
+                                        selectedDay = day;
+                                      });
+                                    },
+                                    child: Card(
+                                      color: selectedDay == day
+                                          ? const Color(0xFF202149)
+                                          : const Color.fromARGB(
+                                              255, 224, 238, 253),
+                                      elevation: 4,
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(10),
+                                        child: Text(
+                                          day,
+                                          style: TextStyle(
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                            color: selectedDay == day
+                                                ? Colors.white
+                                                : Colors.black,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                              ],
+                            ),
+                            const SizedBox(height: 20),
+                            selectedDay != null
+                                ? ListView.builder(
+                                    shrinkWrap: true,
+                                    physics:
+                                        const NeverScrollableScrollPhysics(),
+                                    itemCount: selectedTimetableData?["data"]
+                                                ["seances"]
+                                            ?.where((seance) {
+                                          final date =
+                                              DateTime.parse(seance["date"]);
+                                          return _dayToString(date.weekday)
+                                                  .toLowerCase() ==
+                                              selectedDay!.toLowerCase();
+                                        }).length ??
+                                        0,
+                                    itemBuilder: (context, index) {
+                                      final filteredSeances =
+                                          selectedTimetableData?["data"]
+                                                  ["seances"]
+                                              ?.where((seance) {
+                                        final date =
+                                            DateTime.parse(seance["date"]);
+                                        return _dayToString(date.weekday)
+                                                .toLowerCase() ==
+                                            selectedDay!.toLowerCase();
+                                      }).toList();
+                                      final seance = filteredSeances?[index];
+                                      return Card(
+                                        child: ListTile(
+                                          title: Text(
+                                            seance?["module"]["label"] ??
+                                                "Unknown Module",
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black),
+                                          ),
+                                          subtitle: Text(
+                                            'Type: ${seance?["type_seance"]["label"] ?? ""} | ${seance?["heure_debut"] ?? ""} - ${seance?["heure_fin"] ?? ""} | Salle: ${seance?["salle"]["label"] ?? ""}',
+                                            style: const TextStyle(
+                                                color: Colors.blueGrey),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : const Text(
+                                    'Sélectionnez un jour pour voir les séances.',
+                                    style: TextStyle(fontSize: 16),
+                                  )
                           ],
-                          
                         )
                       ],
-
                     ),
-                   )
-
+                  )
               ],
             ),
     );
@@ -778,4 +802,62 @@ class _HomeCoordinateurState extends State<HomeCoordinateur> {
       ),
     );
   }
+
+  void showCreateTimetableDialog() {
+  final _formKey = GlobalKey<FormState>();
+  String? startDate, endDate;
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: Text('Créer un emploi du temps'),
+        content: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Date de début (YYYY-MM-DD)'),
+                onSaved: (value) => startDate = value,
+                validator: (value) => value!.isEmpty ? 'Champ obligatoire' : null,
+              ),
+              TextFormField(
+                decoration: InputDecoration(labelText: 'Date de fin (YYYY-MM-DD)'),
+                onSaved: (value) => endDate = value,
+                validator: (value) => value!.isEmpty ? 'Champ obligatoire' : null,
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            child: Text('Annuler'),
+            onPressed: () => Navigator.pop(context),
+          ),
+          TextButton(
+            child: Text('Créer'),
+            onPressed: () {
+              if (_formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+
+                final newTimetable = {
+                  "timetable": {
+                    "classe_id": classeid,
+                    "date_debut": "$startDate 00:00:00",
+                    "date_fin": "$endDate 23:59:59",
+                  },
+                  "seances": [] 
+                };
+
+                createTimetable(newTimetable);
+                Navigator.pop(context);
+              }
+            },
+          ),
+        ],
+      );
+    },
+  );
+}
 }

@@ -24,13 +24,13 @@ class DetailsEtudiant extends StatefulWidget {
 class _DetailsEtudiantState extends State<DetailsEtudiant> {
   bool isLoading = true;
   String? selectedDay;
-  String? selectedFeature; // Pour savoir quelle carte est sélectionnée
+  String? selectedFeature; 
   Map<String, dynamic>? userData;
   Map<String, dynamic>? timetableData;
   Map<String, dynamic>? absenceData;
-  bool _isExpanded1 = false; // État pour le premier panneau
-  bool _isExpanded2 = false; // État pour le deuxième panneau
-  bool _isExpanded3 = false; // État pour le troisième panneau
+  bool _isExpanded1 = false; 
+  bool _isExpanded2 = false; 
+  bool _isExpanded3 = false; 
   Map<String, dynamic>? presenceData;
   Map<String, dynamic>? presence2Data;
   Map<String, dynamic>? presence3Data;
@@ -44,7 +44,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
   void didUpdateWidget(covariant DetailsEtudiant oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.userId != oldWidget.userId) {
-      // Si l'utilisateur a changé, recharge les données
+    
       setState(() {
         isLoading = true;
       });
@@ -226,7 +226,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                   ),
 
                   const SizedBox(height: 20),
-                  // Les trois cartes (emploi du temps, présence, absences)
+                 
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -356,7 +356,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                     ],
                   ),
                   const SizedBox(height: 20),
-                  // Affichage du contenu selon la carte sélectionnée
+                
                   if (selectedFeature == "timetable") ...[
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -452,7 +452,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                             expansionCallback: (int index, bool isExpanded) {
                               setState(() {
                                 _isExpanded1 =
-                                    !_isExpanded1; // Basculer l'état du panneau
+                                    !_isExpanded1; 
                               });
                             },
                             children: [
@@ -488,7 +488,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                                 ),
                                 isExpanded: _isExpanded1,
                                 canTapOnHeader:
-                                    true, // Permet de cliquer sur l'en-tête
+                                    true,
                               ),
                             ],
                           ),
@@ -498,7 +498,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                             expansionCallback: (int index, bool isExpanded) {
                               setState(() {
                                 _isExpanded2 =
-                                    !_isExpanded2; // Basculer l'état du panneau
+                                    !_isExpanded2; 
                               });
                             },
                             children: [
@@ -534,7 +534,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                                 ),
                                 isExpanded: _isExpanded2,
                                 canTapOnHeader:
-                                    true, // Permet de cliquer sur l'en-tête
+                                    true, 
                               ),
                             ],
                           ),
@@ -544,7 +544,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                             expansionCallback: (int index, bool isExpanded) {
                               setState(() {
                                 _isExpanded3 =
-                                    !_isExpanded3; // Basculer l'état du panneau
+                                    !_isExpanded3; 
                               });
                             },
                             children: [
@@ -580,7 +580,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                                 ),
                                 isExpanded: _isExpanded3,
                                 canTapOnHeader:
-                                    true, // Permet de cliquer sur l'en-tête
+                                    true,
                               ),
                             ],
                           ),
@@ -595,7 +595,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                             expansionCallback: (int index, bool isExpanded) {
                               setState(() {
                                 _isExpanded1 =
-                                    !_isExpanded1; // Basculer l'état du panneau
+                                    !_isExpanded1;
                               });
                             },
                             children: [
@@ -638,7 +638,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                                 ),
                                 isExpanded: _isExpanded1,
                                 canTapOnHeader:
-                                    true, // Permet de cliquer sur l'en-tête
+                                    true, 
                               ),
                             ],
                           ),
@@ -648,7 +648,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                             expansionCallback: (int index, bool isExpanded) {
                               setState(() {
                                 _isExpanded2 =
-                                    !_isExpanded2; // Basculer l'état du panneau
+                                    !_isExpanded2; 
                               });
                             },
                             children: [
@@ -690,7 +690,7 @@ class _DetailsEtudiantState extends State<DetailsEtudiant> {
                                 ),
                                 isExpanded: _isExpanded2,
                                 canTapOnHeader:
-                                    true, // Permet de cliquer sur l'en-tête
+                                    true, 
                               ),
                             ],
                           ),

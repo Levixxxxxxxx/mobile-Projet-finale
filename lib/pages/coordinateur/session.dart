@@ -16,7 +16,7 @@ class _CoordinatorSessionState extends State<CoordinatorSession> {
   List<dynamic> seanceComming = [];
   List<dynamic> seancePassed = [];
   bool isLoading = true;
-  bool showCurrentSession = true; // To toggle between current and past sessions
+  bool showCurrentSession = true; 
 
 
   @override
@@ -29,6 +29,10 @@ class _CoordinatorSessionState extends State<CoordinatorSession> {
     await recupererDonneesUtilisateur();
     await seances();
   }
+
+
+
+
 
    Future<Map<String, dynamic>?> recupererDonneesUtilisateur() async {
     final response = await http.get(

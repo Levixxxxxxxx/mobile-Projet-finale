@@ -28,6 +28,8 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  file_picker: ^8.0.5
+  fl_chart: ^0.69.2
   flutter:
     sdk: flutter
   flutter_launcher_icons: ^0.14.2

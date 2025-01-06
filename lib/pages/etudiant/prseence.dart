@@ -12,9 +12,9 @@ class Presence extends StatefulWidget {
 }
 
 class _PresenceState extends State<Presence> {
-  bool _isExpanded1 = false; // État pour le premier panneau
-  bool _isExpanded2 = false; // État pour le deuxième panneau
-  bool _isExpanded3 = false; // État pour le deuxième panneau
+  bool _isExpanded1 = false; 
+  bool _isExpanded2 = false; 
+  bool _isExpanded3 = false; 
   bool isLoading = true;
 Map<String, dynamic>? userData;
 Map<String, dynamic>? presenceData;
@@ -51,7 +51,7 @@ Map<String, dynamic>? presenceData;
  
 
     } else {
-      // Si la requête échoue, retourner null
+      
       print('Erreur de récupération des données utilisateur: ${response.statusCode}');
       return null;
     }
@@ -148,7 +148,7 @@ Map<String, dynamic>? presenceData;
               child: ExpansionPanelList(
           expansionCallback: (int index, bool isExpanded) {
              setState(() {
-              _isExpanded1 = !_isExpanded1; // Basculer l'état du panneau
+              _isExpanded1 = !_isExpanded1; 
             });
           },
          children: [
@@ -178,7 +178,7 @@ Map<String, dynamic>? presenceData;
           : Text('Aucune presence'),
               ),
               isExpanded: _isExpanded1,
-              canTapOnHeader: true, // Permet de cliquer sur l'en-tête
+              canTapOnHeader: true, 
             ),
           ],
             ),
@@ -187,7 +187,7 @@ Map<String, dynamic>? presenceData;
               child: ExpansionPanelList(
           expansionCallback: (int index, bool isExpanded) {
              setState(() {
-              _isExpanded2 = !_isExpanded2; // Basculer l'état du panneau
+              _isExpanded2 = !_isExpanded2; 
             });
           },
          children: [
@@ -217,7 +217,7 @@ Map<String, dynamic>? presenceData;
           : Text('Aucune presence'),
               ),
               isExpanded: _isExpanded2,
-              canTapOnHeader: true, // Permet de cliquer sur l'en-tête
+              canTapOnHeader: true, 
             ),
           ],
           
@@ -227,7 +227,7 @@ Map<String, dynamic>? presenceData;
               child: ExpansionPanelList(
           expansionCallback: (int index, bool isExpanded) {
              setState(() {
-              _isExpanded3 = !_isExpanded3; // Basculer l'état du panneau
+              _isExpanded3 = !_isExpanded3; 
             });
           },
          children: [
@@ -257,7 +257,7 @@ Map<String, dynamic>? presenceData;
           : Text('Aucune presence'),
               ),
               isExpanded: _isExpanded3,
-              canTapOnHeader: true, // Permet de cliquer sur l'en-tête
+              canTapOnHeader: true, 
             ),
           ],
           

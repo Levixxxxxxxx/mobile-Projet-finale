@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'dart:io';
+import 'package:file_picker/file_picker.dart';
 
 class User extends StatefulWidget {
   final String token;
@@ -19,13 +21,13 @@ class _UserState extends State<User> {
   int? classeid;
   int? eleveid;
   String? selectedFeature;
-  bool _isExpanded1 = false; // État pour le premier panneau
-  bool _isExpanded2 = false; // État pour le deuxième panneau
-  bool _isExpanded3 = false; // État pour le troisième panneau
+  bool _isExpanded1 = false; 
+  bool _isExpanded2 = false; 
+  bool _isExpanded3 = false; 
   Map<String, dynamic>? presenceData;
   Map<String, dynamic>? presence2Data;
   Map<String, dynamic>? presence3Data;
-    Map<String, dynamic>? absenceData;
+  Map<String, dynamic>? absenceData;
   @override
   void initState() {
     super.initState();
@@ -34,6 +36,33 @@ class _UserState extends State<User> {
 
   Future<void> fetchData() async {
     await classe();
+  }
+
+  Future<void> justifyAbsence(
+      int absenceId, File receipt, String comment) async {
+    final request = http.MultipartRequest(
+      'POST',
+      Uri.parse('http://10.0.2.2:8000/api/trackin/justify/absence/$absenceId'),
+    );
+    request.headers['Authorization'] = 'Bearer ${widget.token}';
+    request.fields['comment'] = comment;
+
+    // Ajout du fichier en tant que form-data
+    request.files.add(await http.MultipartFile.fromPath(
+      'receipt',
+      receipt.path,
+    ));
+
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      print("Absence justifiée avec succès.");
+    
+      await absence();
+    } else {
+      print(
+          "Erreur lors de la justification de l'absence : ${response.statusCode}");
+    }
   }
 
   Future<void> classe() async {
@@ -147,8 +176,7 @@ class _UserState extends State<User> {
     }
   }
 
-
-Future<void> absence() async {
+  Future<void> absence() async {
     final response3 = await http.get(
       Uri.parse(
           'http://10.0.2.2:8000/api/trackin/list/absences/student/${eleveid}'),
@@ -170,13 +198,6 @@ Future<void> absence() async {
       return null;
     }
   }
-
-
-
-
-
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -282,7 +303,8 @@ Future<void> absence() async {
                     child: Column(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.arrow_back, color: const Color.fromARGB(255, 255, 255, 255)),
+                          icon: Icon(Icons.arrow_back,
+                              color: const Color.fromARGB(255, 255, 255, 255)),
                           onPressed: () {
                             setState(() {
                               selectedClasse = null;
@@ -324,10 +346,10 @@ Future<void> absence() async {
                                       onTap: () {
                                         setState(() {
                                           eleveid = Neleve["id"];
-                                           absence();
+                                          absence();
                                           presence();
-                                           presence2();
-                                            presence3();
+                                          presence2();
+                                          presence3();
                                         });
                                       },
                                       child: Card(
@@ -380,21 +402,24 @@ Future<void> absence() async {
                 if (eleveid != null)
                   SingleChildScrollView(
                     child: Column(children: [
-                        IconButton(
-                            icon: Icon(Icons.arrow_back, color: const Color.fromARGB(255, 255, 255, 255)),
-                            onPressed: () {
-                              setState(() {
-                                eleveid = null;
-                              });
-                            },
-                          ),
+                      IconButton(
+                        icon: Icon(Icons.arrow_back,
+                            color: const Color.fromARGB(255, 255, 255, 255)),
+                        onPressed: () {
+                          setState(() {
+                            eleveid = null;
+                          });
+                        },
+                      ),
                       const SizedBox(height: 20),
                       const Text(
                         ' student  Details',
-                        style:
-                            TextStyle(fontSize: 20, fontWeight: FontWeight.bold , color: Colors.white),
+                        style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
                       ),
-                    
+
                       const SizedBox(height: 20),
                       // Les trois cartes (emploi du temps, présence, absences)
                       Row(
@@ -490,16 +515,17 @@ Future<void> absence() async {
                           children: [
                             Center(
                               child: ExpansionPanelList(
-                                expansionCallback: (int index, bool isExpanded) {
+                                expansionCallback:
+                                    (int index, bool isExpanded) {
                                   setState(() {
                                     _isExpanded1 =
-                                        !_isExpanded1; // Basculer l'état du panneau
+                                        !_isExpanded1;
                                   });
                                 },
                                 children: [
                                   ExpansionPanel(
-                                    headerBuilder:
-                                        (BuildContext context, bool isExpanded) {
+                                    headerBuilder: (BuildContext context,
+                                        bool isExpanded) {
                                       return ListTile(
                                         title: Text('Semester 1'),
                                       );
@@ -514,7 +540,8 @@ Future<void> absence() async {
                                                   presenceData?["data"].length,
                                               itemBuilder: (context, index) {
                                                 final Npresence =
-                                                    presenceData?["data"][index];
+                                                    presenceData?["data"]
+                                                        [index];
                                                 return ListTile(
                                                   title: Text(
                                                       "Attendance Rate ${Npresence["attendanceRate"]} %"),
@@ -529,23 +556,24 @@ Future<void> absence() async {
                                     ),
                                     isExpanded: _isExpanded1,
                                     canTapOnHeader:
-                                        true, // Permet de cliquer sur l'en-tête
+                                        true, 
                                   ),
                                 ],
                               ),
                             ),
                             Center(
                               child: ExpansionPanelList(
-                                expansionCallback: (int index, bool isExpanded) {
+                                expansionCallback:
+                                    (int index, bool isExpanded) {
                                   setState(() {
                                     _isExpanded2 =
-                                        !_isExpanded2; // Basculer l'état du panneau
+                                        !_isExpanded2; 
                                   });
                                 },
                                 children: [
                                   ExpansionPanel(
-                                    headerBuilder:
-                                        (BuildContext context, bool isExpanded) {
+                                    headerBuilder: (BuildContext context,
+                                        bool isExpanded) {
                                       return ListTile(
                                         title: Text('Semester 2'),
                                       );
@@ -560,7 +588,8 @@ Future<void> absence() async {
                                                   presence2Data?["data"].length,
                                               itemBuilder: (context, index) {
                                                 final Npresence =
-                                                    presence2Data?["data"][index];
+                                                    presence2Data?["data"]
+                                                        [index];
                                                 return ListTile(
                                                   title: Text(
                                                       "Attendance Rate ${Npresence["attendanceRate"]} %"),
@@ -575,23 +604,24 @@ Future<void> absence() async {
                                     ),
                                     isExpanded: _isExpanded2,
                                     canTapOnHeader:
-                                        true, // Permet de cliquer sur l'en-tête
+                                        true, 
                                   ),
                                 ],
                               ),
                             ),
                             Center(
                               child: ExpansionPanelList(
-                                expansionCallback: (int index, bool isExpanded) {
+                                expansionCallback:
+                                    (int index, bool isExpanded) {
                                   setState(() {
                                     _isExpanded3 =
-                                        !_isExpanded3; // Basculer l'état du panneau
+                                        !_isExpanded3; 
                                   });
                                 },
                                 children: [
                                   ExpansionPanel(
-                                    headerBuilder:
-                                        (BuildContext context, bool isExpanded) {
+                                    headerBuilder: (BuildContext context,
+                                        bool isExpanded) {
                                       return ListTile(
                                         title: Text('Semester 3'),
                                       );
@@ -606,7 +636,8 @@ Future<void> absence() async {
                                                   presence3Data?["data"].length,
                                               itemBuilder: (context, index) {
                                                 final Npresence =
-                                                    presence3Data?["data"][index];
+                                                    presence3Data?["data"]
+                                                        [index];
                                                 return ListTile(
                                                   title: Text(
                                                       "Attendance Rate ${Npresence["attendanceRate"]} %"),
@@ -621,132 +652,236 @@ Future<void> absence() async {
                                     ),
                                     isExpanded: _isExpanded3,
                                     canTapOnHeader:
-                                        true, // Permet de cliquer sur l'en-tête
+                                        true, 
                                   ),
                                 ],
                               ),
                             )
                           ],
                         )
-                      ]
-                       else if (selectedFeature == "absence") ...[
-                      Column(
-                        children: [
-                          Center(
-                            child: ExpansionPanelList(
-                              expansionCallback: (int index, bool isExpanded) {
-                                setState(() {
-                                  _isExpanded1 =
-                                      !_isExpanded1; // Basculer l'état du panneau
-                                });
-                              },
-                              children: [
-                                ExpansionPanel(
-                                  headerBuilder:
-                                      (BuildContext context, bool isExpanded) {
-                                    return ListTile(
-                                      title: Text(
-                                        'Unjustified Absence',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            color:
-                                                Color.fromARGB(255, 0, 24, 88)),
-                                      ),
-                                    );
-                                  },
-                                  body: ListTile(
-                                    title: absenceData?["data"]["notjustified"] !=
-                                            null
-                                        ? ListView.builder(
-                                            shrinkWrap: true,
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
-                                            itemCount: absenceData?["data"]
-                                                    ["notjustified"]
-                                                .length,
-                                            itemBuilder: (context, index) {
-                                              final Nabsence =
-                                                  absenceData?["data"]
-                                                      ["notjustified"][index];
-                                              return ListTile(
-                                                title:
-                                                    Text(Nabsence["type_seance"]),
-                                                subtitle: Text(
-                                                    '${Nabsence["seance_heure_debut"]} - ${Nabsence["seance_heure_fin"]} '),
-                                              );
-                                            },
-                                          )
-                                        : Text('Aucune absence non justifiee.'),
+                      ] else if (selectedFeature == "absence") ...[
+                        Column(
+                          children: [
+                            Center(
+                              child: ExpansionPanelList(
+                                expansionCallback:
+                                    (int index, bool isExpanded) {
+                                  setState(() {
+                                    _isExpanded1 =
+                                        !_isExpanded1; 
+                                  });
+                                },
+                                children: [
+                                  ExpansionPanel(
+                                    headerBuilder: (BuildContext context,
+                                        bool isExpanded) {
+                                      return ListTile(
+                                        title: Text(
+                                          'Unjustified Absence',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              color: Color.fromARGB(
+                                                  255, 0, 24, 88)),
+                                        ),
+                                      );
+                                    },
+                                    body: ListTile(
+                                      title: absenceData?["data"]
+                                                  ["notjustified"] !=
+                                              null
+                                          ? ListView.builder(
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemCount: absenceData?["data"]
+                                                      ["notjustified"]
+                                                  .length,
+                                              itemBuilder: (context, index) {
+                                                final Nabsence =
+                                                    absenceData?["data"]
+                                                        ["notjustified"][index];
+                                                return ListTile(
+                                                  title: Text(
+                                                      Nabsence["type_seance"]),
+                                                  subtitle: Text(
+                                                      '${Nabsence["seance_heure_debut"]} - ${Nabsence["seance_heure_fin"]} '),
+                                                  trailing: IconButton(
+                                                    icon: Icon(Icons.edit),
+                                                    onPressed: () {
+                                                      showJustifyDialog(
+                                                          Nabsence["id"]);
+                                                    },
+                                                  ),
+                                                );
+                                              },
+                                            )
+                                          : Text(
+                                              'Aucune absence non justifiee.'),
+                                    ),
+                                    isExpanded: _isExpanded1,
+                                    canTapOnHeader:
+                                        true, 
                                   ),
-                                  isExpanded: _isExpanded1,
-                                  canTapOnHeader:
-                                      true, // Permet de cliquer sur l'en-tête
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                          Center(
-                            child: ExpansionPanelList(
-                              expansionCallback: (int index, bool isExpanded) {
-                                setState(() {
-                                  _isExpanded2 =
-                                      !_isExpanded2; // Basculer l'état du panneau
-                                });
-                              },
-                              children: [
-                                ExpansionPanel(
-                                  headerBuilder:
-                                      (BuildContext context, bool isExpanded) {
-                                    return ListTile(
-                                      title: Text(
-                                        'Justified Absence',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w700,
-                                            color:
-                                                Color.fromARGB(255, 0, 24, 88)),
-                                      ),
-                                    );
-                                  },
-                                  body: ListTile(
-                                    title: absenceData?["data"]["justified"] !=
-                                            null
-                                        ? ListView.builder(
-                                            shrinkWrap: true,
-                                            physics:
-                                                NeverScrollableScrollPhysics(),
-                                            itemCount: absenceData?["data"]
-                                                    ["justified"]
-                                                .length,
-                                            itemBuilder: (context, index) {
-                                              final absence = absenceData?["data"]
-                                                  ["justified"][index];
-                                              return ListTile(
-                                                title:
-                                                    Text(absence["type_seance"]),
-                                                subtitle: Text(
-                                                    '${absence["seance_heure_debut"]} - ${absence["seance_heure_fin"]} '),
-                                              );
-                                            },
-                                          )
-                                        : Text('Aucune absence justifiee.'),
+                            Center(
+                              child: ExpansionPanelList(
+                                expansionCallback:
+                                    (int index, bool isExpanded) {
+                                  setState(() {
+                                    _isExpanded2 =
+                                        !_isExpanded2; 
+                                  });
+                                },
+                                children: [
+                                  ExpansionPanel(
+                                    headerBuilder: (BuildContext context,
+                                        bool isExpanded) {
+                                      return ListTile(
+                                        title: Text(
+                                          'Justified Absence',
+                                          style: TextStyle(
+                                              fontWeight: FontWeight.w700,
+                                              color: Color.fromARGB(
+                                                  255, 0, 24, 88)),
+                                        ),
+                                      );
+                                    },
+                                    body: ListTile(
+                                      title: absenceData?["data"]
+                                                  ["justified"] !=
+                                              null
+                                          ? ListView.builder(
+                                              shrinkWrap: true,
+                                              physics:
+                                                  NeverScrollableScrollPhysics(),
+                                              itemCount: absenceData?["data"]
+                                                      ["justified"]
+                                                  .length,
+                                              itemBuilder: (context, index) {
+                                                final absence =
+                                                    absenceData?["data"]
+                                                        ["justified"][index];
+                                                return ListTile(
+                                                  title: Text(
+                                                      absence["type_seance"]),
+                                                  subtitle: Text(
+                                                      '${absence["seance_heure_debut"]} - ${absence["seance_heure_fin"]} '),
+                                                );
+                                              },
+                                            )
+                                          : Text('Aucune absence justifiee.'),
+                                    ),
+                                    isExpanded: _isExpanded2,
+                                    canTapOnHeader:
+                                        true, 
                                   ),
-                                  isExpanded: _isExpanded2,
-                                  canTapOnHeader:
-                                      true, // Permet de cliquer sur l'en-tête
-                                ),
-                              ],
-                            ),
-                          )
-                        ],
-                      ),
-                    ],
-                    
-                    
-                    
-                    
-                    
+                                ],
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
                     ]),
                   ),
               ]));
+  }
+
+  void showJustifyDialog(int absenceId) {
+    File? selectedFile;
+    final TextEditingController commentController = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Justifier une absence'),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: commentController,
+                  decoration: InputDecoration(
+                    labelText: 'Commentaire',
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton.icon(
+                  icon: const Icon(Icons.attach_file),
+                  label: const Text('Choisir un fichier'),
+                  onPressed: () async {
+                    try {
+                      File? file = await pickFile();
+                      if (file != null) {
+                        setState(() {
+                          selectedFile = file;
+                        });
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                              content: Text("Aucun fichier sélectionné.")),
+                        );
+                      }
+                    } catch (e) {
+                      print("Erreur lors de la sélection du fichier : $e");
+                    }
+                  },
+                ),
+                if (selectedFile != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10),
+                    child: Text(
+                      'Fichier sélectionné : ${selectedFile!.path.split('/').last}',
+                      style: const TextStyle(fontSize: 12, color: Colors.green),
+                    ),
+                  ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              child: const Text('Annuler'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: const Text('Envoyer'),
+              onPressed: () async {
+                if (selectedFile != null && commentController.text.isNotEmpty) {
+                  await justifyAbsence(
+                      absenceId, selectedFile!, commentController.text);
+                  Navigator.of(context).pop();
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                        content: Text("Veuillez remplir tous les champs.")),
+                  );
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<File?> pickFile() async {
+    FilePickerResult? result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: [
+        'jpg',
+        'png',
+        'pdf'
+      ],
+    );
+    print("Résultat du sélecteur de fichiers : $result");
+    if (result != null && result.files.single.path != null) {
+      return File(result.files.single.path!);
+    }
+    return null;
   }
 }

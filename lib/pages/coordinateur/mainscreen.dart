@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ifrantrackln/pages/coordinateur/Graphic.dart';
 import 'package:ifrantrackln/pages/coordinateur/Timetable.dart';
 import 'package:ifrantrackln/pages/coordinateur/session.dart';
 import 'package:ifrantrackln/pages/coordinateur/user.dart';
@@ -150,6 +151,17 @@ Future<void> deconnexion(BuildContext context) async {
               onTap: () {
                      setState(() {
                   _currentPage = User(token: widget.token);
+                });
+
+                 _scaffoldKey.currentState?.closeDrawer();
+              },
+            ),
+               ListTile(
+              leading: Icon(Icons.graphic_eq),
+              title: Text('Graphic'),
+              onTap: () {
+                     setState(() {
+                  _currentPage = Graphic(token: widget.token);
                 });
 
                  _scaffoldKey.currentState?.closeDrawer();
