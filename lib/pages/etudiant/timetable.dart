@@ -208,7 +208,7 @@ String _dayToString(int weekday) {
         ),
       )
     : const Text(
-        'Sélectionnez un jour pour voir les séances.',
+        'Select a day to view sessions.',
         style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600),
       ),
 

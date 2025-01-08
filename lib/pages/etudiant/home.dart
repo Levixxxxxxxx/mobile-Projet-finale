@@ -35,7 +35,7 @@ class _MyWidgetState extends State<HomeEtudiant> {
            SizedBox(height: 10 ),
             Container( 
               margin: EdgeInsets.only(left: 10),                             
-              child: Text('Hi , Username', style: TextStyle(
+              child: Text('Hi ', style: TextStyle(
                 color: Colors.white , 
                 fontWeight: FontWeight.w700 , 
                 fontSize: 16
@@ -99,7 +99,7 @@ class _MyWidgetState extends State<HomeEtudiant> {
                     ),
                     SizedBox(height: 8), 
                     Text(
-                      "Sous-titre ",
+                      "SubTitle ",
                       style: TextStyle(
                         fontSize: 14,
                         color: const Color.fromARGB(255, 255, 255, 255),
@@ -154,7 +154,7 @@ class _MyWidgetState extends State<HomeEtudiant> {
                       ),
                       SizedBox(height: 8), 
                       Text(
-                        "Sous-titre ",
+                        "SubTitle ",
                         style: TextStyle(
                           fontSize: 14,
                           color: const Color.fromARGB(255, 255, 255, 255),
@@ -206,7 +206,7 @@ class _MyWidgetState extends State<HomeEtudiant> {
                     ),
                     SizedBox(height: 8), 
                     Text(
-                      "Sous-titre ",
+                      "SubTitle ",
                       style: TextStyle(
                         fontSize: 14,
                         color: const Color.fromARGB(255, 255, 255, 255),
